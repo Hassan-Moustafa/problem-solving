@@ -1,0 +1,129 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Pair {
+public:
+	long long int level;
+	long long int count;
+	Pair(){
+		level = 0;
+		count = 0;
+	}
+	Pair(long long int level , long long int count){
+		this->level = level;
+		this->count = count;
+	}
+};
+
+class Index {
+public:
+	vector<Pair> supported;
+};
+
+int main() {
+	//code
+
+	long long int testCases;
+	cin >> testCases;
+
+	long long int * results = new long long int[testCases];
+
+	for (long long int i = 0; i < testCases; i++){
+		long long int size;
+		cin >> size;
+
+// 		cout << size << endl;
+		long long int * arr = new long long int[size];
+		for (long long int j = 0; j < size; j++){
+			long long int num;
+			cin >> num;
+			arr[j] = num;
+		}
+
+
+		long long int maxArea = 0;
+
+		Pair temp;
+		temp.level = arr[0];
+		temp.count = 1;
+
+		if (temp.count * temp.level > maxArea) {
+			maxArea = temp.count * temp.level;
+		}
+
+		vector<Index> indexes;
+
+		Index index;
+		index.supported.push_back(temp);
+
+		indexes.push_back(index);
+
+		for (long long int j = 1; j < size; j++) {
+
+			long long int minLevelGreaterThanMe = 9000000000000000000;
+			long long int minLevelGreaterThanMeIndex = -1;
+
+			for (long long int k = 0; k < indexes[j - 1].supported.size(); k++){
+
+				Index index;
+				indexes.push_back(index);
+
+				Pair res = indexes[j - 1].supported[k];
+
+				if (arr[j] > res.level){
+
+					Pair temp;
+					temp.level = res.level;
+					temp.count = res.count + 1;
+
+					if (temp.count * temp.level > maxArea) {
+						maxArea = temp.count * temp.level;
+					}
+
+					indexes[j].supported.push_back(temp);
+				}
+				else {
+					if (res.level < minLevelGreaterThanMe){
+						minLevelGreaterThanMeIndex = k;
+						minLevelGreaterThanMe = res.level;
+					}
+				}
+			}
+
+			if (minLevelGreaterThanMeIndex == -1) {
+				Pair temp;
+				temp.level = arr[j];
+				temp.count = 1;
+
+				if (temp.count * temp.level > maxArea) {
+					maxArea = temp.count * temp.level;
+				}
+
+				indexes[j].supported.push_back(temp);
+			}
+			else {
+				Pair temp;
+				temp.level = arr[j];
+				temp.count = indexes[j-1].supported[minLevelGreaterThanMeIndex].count + 1;
+
+				if (temp.count * temp.level > maxArea) {
+					maxArea = temp.count * temp.level;
+				}
+
+				indexes[j].supported.push_back(temp);
+			}
+		}
+
+		results[i] = maxArea;
+	}
+
+	for (long long int i = 0; i < testCases; i++) {
+		cout << results[i] << endl;
+	}
+
+
+	return 0;
+}
+
+
